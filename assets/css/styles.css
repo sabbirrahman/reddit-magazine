@@ -1,0 +1,25 @@
+/* Resets */
+@-ms-viewport { width: device-width; }
+
+* {
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+	        box-sizing: border-box;
+	-webkit-font-smoothing: antialiased;
+	        font-smoothing: antialiased;
+  padding: 0px;
+  margin: 0px;
+}
+
+/* Header Styles */
+header {
+  background: #fc461f;
+  align-items: center;
+  padding: 0px 10%;
+  display: flex;
+  height: 64px;
+}
+
+header img {
+  height: 48px;
+}
