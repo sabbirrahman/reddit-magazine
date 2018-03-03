@@ -1,31 +1,39 @@
 import { RedditService } from './reddit.service.js';
 
+const searchForm = document.querySelector('search-form');
+const postGrid = document.querySelector('post-grid');
 const redditService = new RedditService();
-const postContainer = document.querySelector('.posts');
+let redditPosts = [];
 
-function getPosts() {
+function showPosts() {
+  document.querySelector('post-grid').posts = JSON.stringify(redditPosts);
+}
+
+function getPosts(q = 'wdywt', sr = 'streetwear') {
   redditService
-    .search()
+    .search(q, sr)
     .then((posts) => {
-      localStorage.setItem('posts', JSON.stringify(posts));
-      showPosts(posts);
+      redditPosts = posts;
+      showPosts();
     });
 }
-  
-function showPosts(posts = []) {
-  posts.forEach((post) => {
-    const postEl = document.createElement('post-card');
-    postContainer.appendChild(postEl)
-    postEl.src = post.data.thumbnail;
-    postEl.title = post.data.title;
-    postEl.href = `https://www.reddit.com/${post.data.permalink}`;
-  });
-}
 
-if (localStorage.getItem('posts')) {
-  const posts = JSON.parse(localStorage.getItem('posts'));
-  console.log(posts);
-  showPosts(posts);
-} else {
+postGrid.addEventListener('autoload', () => {
   getPosts();
-}
+});
+
+searchForm.addEventListener('search', (ev) => {
+  getPosts(ev.detail.searchTerm, ev.detail.subreddit);
+});
+
+window.addEventListener('scroll', (ev) => {
+  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+    const prom = redditService.loadMore();
+    if (prom) {
+      prom.then((posts) => {
+        redditPosts = [...redditPosts, ...posts];
+        showPosts();
+      });
+    }
+  }
+});

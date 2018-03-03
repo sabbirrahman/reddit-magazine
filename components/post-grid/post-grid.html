@@ -1,0 +1,84 @@
+<template>
+  <style>
+    .posts {
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 12px;
+      display: grid;
+    }
+
+    @media screen and (max-width: 1024px) {
+      .posts { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    @media screen and (max-width: 720px) {
+      .posts { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media screen and (max-width: 480px) {
+      .posts { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+
+  <div class="posts"></div>
+</template>
+
+<script>
+  (function() {
+    const doc = (document._currentScript || document.currentScript).ownerDocument;
+    const template = doc.querySelector('template').content;
+  
+    class PostGrid extends HTMLElement {
+      static get observedAttributes() { return ['posts']; }
+      
+      set posts(posts) { this.setAttribute('posts', posts); }
+      get posts() { return this.getAttribute('posts'); }
+  
+      connectedCallback() {
+        const shadowRoot = this.attachShadow({ mode:'open' });
+        const clone = doc.importNode(template, true);
+
+        this.shadowRoot.appendChild(clone);
+        
+        if (localStorage.getItem('posts')) {
+          const exp = JSON.parse(localStorage.getItem('exp'));
+          if (new Date(exp) > new Date()) {
+            this.update(localStorage.getItem('posts'), false);
+          } else {
+            localStorage.removeItem('posts');
+            localStorage.removeItem('exp');
+
+            this.dispatchEvent(new CustomEvent('autoload'));
+          }
+        } else {
+          this.dispatchEvent(new CustomEvent('autoload'));
+        }
+      }
+  
+      attributeChangedCallback(prop, oldValue, newValue) {
+        this.update();
+      }
+      
+      update(posts = this.posts, extendCache = true) {
+        try {
+          const postsEl = this.shadowRoot.querySelector('.posts');
+          postsEl.innerHTML = '';
+          
+          JSON.parse(posts).forEach((post) => {
+            const postEl = document.createElement('post-card');
+            postsEl.appendChild(postEl)
+            postEl.src = post.src;
+            postEl.title = post.title;
+            postEl.href = `https://www.reddit.com/${post.href}`;
+          });
+
+          if (extendCache) {
+            localStorage.setItem('posts', this.posts);
+            localStorage.setItem('exp', Date.now() + 5 * 60 * 1000);
+          }
+        } catch (e) {}
+      }
+    }
+  
+    window.customElements.define('post-grid', PostGrid);
+  })();
+</script>
