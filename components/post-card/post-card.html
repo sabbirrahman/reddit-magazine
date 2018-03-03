@@ -41,39 +41,41 @@
 </template>
 
 <script>
-  const doc = (document._currentScript || document.currentScript).ownerDocument;
-  const template = doc.querySelector('template').content;
-
-  class PostCard extends HTMLElement {
-    static get observedAttributes() { return ['src', 'href', 'title']; }
-    
-    set src(url) { this.setAttribute('src', url); }
-    get src() { return this.getAttribute('src'); }
-    
-    set href(url) { this.setAttribute('href', url); }
-    get href() { return this.getAttribute('href'); }
-
-    set title(str) { this.setAttribute('title', str); }
-    get title() { return this.getAttribute('title'); }
-
-    connectedCallback() {
-      const shadowRoot = this.attachShadow({ mode:'open' });
-      const clone = doc.importNode(template, true);
-
-      this.shadowRoot.appendChild(clone);
-      this.update();
+  (function() {
+    const doc = (document._currentScript || document.currentScript).ownerDocument;
+    const template = doc.querySelector('template').content;
+  
+    class PostCard extends HTMLElement {
+      static get observedAttributes() { return ['src', 'href', 'title']; }
+      
+      set src(url) { this.setAttribute('src', url); }
+      get src() { return this.getAttribute('src'); }
+      
+      set href(url) { this.setAttribute('href', url); }
+      get href() { return this.getAttribute('href'); }
+  
+      set title(str) { this.setAttribute('title', str); }
+      get title() { return this.getAttribute('title'); }
+  
+      connectedCallback() {
+        const shadowRoot = this.attachShadow({ mode:'open' });
+        const clone = doc.importNode(template, true);
+  
+        this.shadowRoot.appendChild(clone);
+        this.update();
+      }
+  
+      attributeChangedCallback(prop, oldValue, newValue) {
+        this.update();
+      }
+  
+      update() {
+        this.shadowRoot && this.shadowRoot.querySelector('img').setAttribute('src', this.src);
+        this.shadowRoot && this.shadowRoot.querySelector('a').setAttribute('href', this.href);
+        if (this.shadowRoot) { this.shadowRoot.querySelector('#title').textContent = this.title; }
+      }
     }
-
-    attributeChangedCallback(prop, oldValue, newValue) {
-      this.update();
-    }
-
-    update() {
-      this.shadowRoot && this.shadowRoot.querySelector('img').setAttribute('src', this.src);
-      this.shadowRoot && this.shadowRoot.querySelector('a').setAttribute('href', this.href);
-      if (this.shadowRoot) { this.shadowRoot.querySelector('#title').textContent = this.title; }
-    }
-  }
-
-  window.customElements.define('post-card', PostCard);
+  
+    window.customElements.define('post-card', PostCard);
+  })();
 </script>

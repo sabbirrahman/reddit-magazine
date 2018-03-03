@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="./assets/css/styles.css">
 
   <!-- Components Imports -->
+  <link rel="import" href="./components/search-form/search-form.html">
   <link rel="import" href="./components/post-card/post-card.html">
 </head>
 <body>
@@ -21,11 +22,7 @@
 
   <main>
     <div class="container">
-      <form>
-        <input type="text" placeholder="Subreddit">
-        <input type="text" placeholder="Search Term">
-        <button>Search</button>
-      </form>
+      <search-form></search-form>
     </div>
     <div class="container posts">
     </div>
