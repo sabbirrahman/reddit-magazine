@@ -1,0 +1,79 @@
+<template>
+  <style>
+    :host {
+      transition: 0.3s all cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 2px 3px 0 rgba(52, 51, 74, 0.06);
+      background: #FFFFFF;
+      border-radius: 6px;
+      padding: 4px;
+    }
+    :host(:hover) {
+      box-shadow: 0 16px 24px 0 rgba(114, 135, 171, 0.2);
+      transform: translateY(-8px);
+    }
+    a {
+      font-family: Arial, Helvetica, sans-serif;
+      text-decoration: none;
+      min-height: 260px;
+      color: #342431;
+      font-size: 14px;
+      height: inherit;
+      
+    }
+    img {
+      border-radius: 6px 6px 0px 0px;
+      margin-bottom: -4px;
+      object-fit: cover;
+      height: 140px;
+      width: 100%;
+    }
+    span {
+      display: block;
+      padding: 12px;
+    }
+  </style>
+
+  <a target="_blank">
+    <img>
+    <span id="title"></span>
+  </a>
+
+</template>
+
+<script>
+  const doc = (document._currentScript || document.currentScript).ownerDocument;
+  const template = doc.querySelector('template').content;
+
+  class PostCard extends HTMLElement {
+    static get observedAttributes() { return ['src', 'href', 'title']; }
+    
+    set src(url) { this.setAttribute('src', url); }
+    get src() { return this.getAttribute('src'); }
+    
+    set href(url) { this.setAttribute('href', url); }
+    get href() { return this.getAttribute('href'); }
+
+    set title(str) { this.setAttribute('title', str); }
+    get title() { return this.getAttribute('title'); }
+
+    connectedCallback() {
+      const shadowRoot = this.attachShadow({ mode:'open' });
+      const clone = doc.importNode(template, true);
+
+      this.shadowRoot.appendChild(clone);
+      this.update();
+    }
+
+    attributeChangedCallback(prop, oldValue, newValue) {
+      this.update();
+    }
+
+    update() {
+      this.shadowRoot && this.shadowRoot.querySelector('img').setAttribute('src', this.src);
+      this.shadowRoot && this.shadowRoot.querySelector('a').setAttribute('href', this.href);
+      if (this.shadowRoot) { this.shadowRoot.querySelector('#title').textContent = this.title; }
+    }
+  }
+
+  window.customElements.define('post-card', PostCard);
+</script>
