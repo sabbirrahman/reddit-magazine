@@ -46,4 +46,12 @@ export class RedditService {
       return this.search(this.subreddits, this.q, this.t, true);
     }
   }
+
+  popularSubreddits(limit = 3) {
+    const url = `https://www.reddit.com/subreddits/popular.json?limit=${limit}`
+    return fetch(url)
+      .then(res => res.json())
+      .then(res => res && res.data && res.data.children || [])
+      .then(res => res && res.map(r => r.data.display_name) || [])
+  }
 }

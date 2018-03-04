@@ -9,12 +9,15 @@ function showPosts() {
   document.querySelector('post-grid').posts = JSON.stringify(redditPosts);
 }
 
-async function getPosts(sr = ['marvelmemes', 'dcmemes'], q, t) {
+async function getPosts(sr, q, t) {
   redditPosts = await redditService.search(sr, q, t)
   showPosts();
 }
 
-postGrid.addEventListener('autoload', () => { getPosts(); });
+postGrid.addEventListener('autoload', async () => {
+  const popularSubreddits = await redditService.popularSubreddits();
+  getPosts(popularSubreddits);
+});
 
 searchForm.addEventListener('search', (ev) => {
   getPosts(ev.detail.subreddit, ev.detail.searchTerm, ev.detail.timeRange);
