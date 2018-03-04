@@ -1,15 +1,16 @@
 <template>
   <style>
     .posts {
+      font-family: Arial, Helvetica, sans-serif;
       grid-template-columns: repeat(5, 1fr);
+      color: #fc461f;
+      font-size: 18px;
       grid-gap: 12px;
       display: grid;
     }
 
-    div {
-      font-family: Arial, Helvetica, sans-serif;
-      color: #fc461f;
-      font-size: 18px;
+    .loading {
+      padding-top: 12px;
     }
 
     @media screen and (max-width: 1024px) {
@@ -26,6 +27,11 @@
   </style>
 
   <div class="posts"></div>
+  <div class="posts loading" style="display: none">
+    <post-card></post-card>
+    <post-card></post-card>
+    <post-card></post-card>
+  </div>
 </template>
 
 <script>
@@ -34,10 +40,15 @@
     const template = doc.querySelector('template').content;
   
     class PostGrid extends HTMLElement {
-      static get observedAttributes() { return ['posts']; }
+      static get observedAttributes() { return ['posts', 'loading']; }
       
       set posts(posts) { this.setAttribute('posts', posts); }
       get posts() { return this.getAttribute('posts'); }
+      
+      set loading(loading) {
+        loading ? this.setAttribute('loading', '') : this.removeAttribute('loading');
+      }
+      get loading() { return this.hasAttribute('loading'); }
   
       connectedCallback() {
         const shadowRoot = this.attachShadow({ mode:'open' });
@@ -61,18 +72,18 @@
       }
   
       attributeChangedCallback(prop, oldValue, newValue) {
-        this.update();
+        if (prop === 'loading') {
+          const display = newValue === null ? 'none' : 'grid';
+          this.shadowRoot.querySelector('.posts.loading').style.display = display;
+        } else {
+          this.update();
+        }
       }
       
       update(posts = this.posts, extendCache = true) {
         try {
           const postsEl = this.shadowRoot.querySelector('.posts');
           postsEl.innerHTML = '';
-
-          if (!JSON.parse(posts).length) {
-            postsEl.innerHTML = 'No Result Found!';
-            return;
-          }
           
           JSON.parse(posts).forEach((post) => {
             const postEl = document.createElement('post-card');

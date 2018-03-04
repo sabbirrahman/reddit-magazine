@@ -1,11 +1,13 @@
 export class RedditService {
   search(subreddits, q, t = 'all', loadMore = false) {
-    this.subreddits = subreddits;
+    this.subreddits = [];
     this.t = t;
     this.q = q;
     
     const urls = [];
     subreddits.forEach((sr, i) => {
+      if (loadMore && this.next[i] === '') { return; }
+      
       urls.push(`https://www.reddit.com/r/${sr.toLowerCase()}/`);
       if (q) {
         urls[i] += `search.json?sort=top&restrict_sr=on&type=image&limit=15&q=${q.toLowerCase()}&t=${t}`;
@@ -14,6 +16,8 @@ export class RedditService {
       }
 
       if (loadMore) { urls[i] += `&after=${this.next[i]}`; }
+
+      this.subreddits.push(sr);
     });
 
     const promises = urls.map(url => fetch(url).then(res => res.json()))
@@ -22,7 +26,7 @@ export class RedditService {
     return Promise.all(promises)
       .then(resArr => {
         return resArr.map((res, i) => {
-          this.next.push(res && res.data && res.data.after || null);
+          this.next.push(res && res.data && res.data.after || '');
           return res && res.data && res.data.children || [];
         });
       })

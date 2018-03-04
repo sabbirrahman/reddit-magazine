@@ -40,8 +40,8 @@
   </style>
 
   <a target="_blank">
-    <img>
-    <span id="title"></span>
+    <img src="./assets/images/image.png">
+    <span id="title">Loading...</span>
   </a>
 
 </template>
@@ -76,9 +76,9 @@
       }
   
       update() {
-        this.shadowRoot && this.shadowRoot.querySelector('img').setAttribute('src', this.src);
-        this.shadowRoot && this.shadowRoot.querySelector('a').setAttribute('href', this.href);
-        if (this.shadowRoot) { this.shadowRoot.querySelector('#title').textContent = this.title; }
+        this.shadowRoot && this.src && this.shadowRoot.querySelector('img').setAttribute('src', this.src);
+        this.shadowRoot && this.href && this.shadowRoot.querySelector('a').setAttribute('href', this.href);
+        if (this.shadowRoot && this.title) { this.shadowRoot.querySelector('#title').textContent = this.title; }
       }
     }
   
