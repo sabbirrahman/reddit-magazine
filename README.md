@@ -2,7 +2,7 @@
 >A simple reddit magazine app using web components.
 
 <p align="center">
-  <img width="320px" src="https://raw.githubusercontent.com/sabbirrahman/reddit-magazine/master/assets/images/home.jpg">
+  <img width="600px" src="https://raw.githubusercontent.com/sabbirrahman/reddit-magazine/master/assets/images/home.jpg">
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/sabbirrahman/reddit-magazine/blob/master/LICENSE)
