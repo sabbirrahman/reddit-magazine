@@ -1,24 +1,32 @@
 export class RedditService {
-  search(sr, q, t = 'all', loadMore = false) {
-    this.sr = sr;
+  search(subreddits, q, t = 'all', loadMore = false) {
+    this.subreddits = subreddits;
     this.t = t;
     this.q = q;
     
-    this.url = `https://www.reddit.com/r/${sr.toLowerCase()}/`;
-    if (q) {
-      this.url += `search.json?sort=top&restrict_sr=on&type=image&q=${q.toLowerCase()}&t=${t}`;
-    } else {
-      this.url += `top.json?show=all&t=${t}`
-    }
+    const urls = [];
+    subreddits.forEach((sr, i) => {
+      urls.push(`https://www.reddit.com/r/${sr.toLowerCase()}/`);
+      if (q) {
+        urls[i] += `search.json?sort=top&restrict_sr=on&type=image&limit=15&q=${q.toLowerCase()}&t=${t}`;
+      } else {
+        urls[i] += `top.json?show=all&limit=15&t=${t}`
+      }
 
-    if (loadMore) { this.url += `&after=${this.next}`; }
+      if (loadMore) { urls[i] += `&after=${this.next[i]}`; }
+    });
+
+    const promises = urls.map(url => fetch(url).then(res => res.json()))
     
-    return fetch(this.url)
-      .then(res => res.json())
-      .then(res => {
-        this.next = res && res.data && res.data.after || null;
-        return res && res.data && res.data.children || [];
+    this.next = [];
+    return Promise.all(promises)
+      .then(resArr => {
+        return resArr.map((res, i) => {
+          this.next.push(res && res.data && res.data.after || null);
+          return res && res.data && res.data.children || [];
+        });
       })
+      .then(res => [].concat.apply([], res))
       .then(posts => {
         return posts.reduce((arr, post) => {
           if (/^http/.test(post.data.thumbnail)) {
@@ -34,8 +42,8 @@ export class RedditService {
   }
 
   loadMore() {
-    if (this.next && this.sr) {
-      return this.search(this.sr, this.q, this.t, true);
+    if (this.next && this.next.length && this.subreddits) {
+      return this.search(this.subreddits, this.q, this.t, true);
     }
   }
 }

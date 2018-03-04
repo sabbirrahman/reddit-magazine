@@ -9,31 +9,23 @@ function showPosts() {
   document.querySelector('post-grid').posts = JSON.stringify(redditPosts);
 }
 
-function getPosts(sr = 'streetwear', q, t) {
-  redditService
-    .search(sr, q, t)
-    .then((posts) => {
-      redditPosts = posts;
-      showPosts();
-    });
+async function getPosts(sr = ['marvelmemes', 'dcmemes'], q, t) {
+  redditPosts = await redditService.search(sr, q, t)
+  showPosts();
 }
 
-postGrid.addEventListener('autoload', () => {
-  getPosts();
-});
+postGrid.addEventListener('autoload', () => { getPosts(); });
 
 searchForm.addEventListener('search', (ev) => {
   getPosts(ev.detail.subreddit, ev.detail.searchTerm, ev.detail.timeRange);
 });
 
-window.addEventListener('scroll', (ev) => {
+window.addEventListener('scroll', async (ev) => {
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-    const prom = redditService.loadMore();
-    if (prom) {
-      prom.then((posts) => {
-        redditPosts = [...redditPosts, ...posts];
-        showPosts();
-      });
+    const posts = await redditService.loadMore();
+    if (posts) {
+      redditPosts = [...redditPosts, ...posts];
+      showPosts();
     }
   }
 });

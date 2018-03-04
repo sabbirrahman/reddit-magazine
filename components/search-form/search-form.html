@@ -49,7 +49,7 @@
   </style>
 
   <form>
-    <input type="text" placeholder="Subreddit">
+    <input type="text" placeholder="Subreddit" data-multiple>
     <input type="text" placeholder="Search Term">
     <select placholder="Time Range">
       <option value="hour">Past hour</option>
@@ -85,9 +85,13 @@
   
         this.shadowRoot.querySelector('form').addEventListener('submit', (ev) => {
           ev.preventDefault();
+          const srvalue = srInput.value.split(', ');
+          if (srvalue[srvalue.length - 1] === '') {
+            srvalue.pop();
+          }
           this.dispatchEvent(new CustomEvent('search', {
             detail: {
-              subreddit: srInput.value,
+              subreddit: srvalue,
               searchTerm: searchInput.value,
               timeRange: selectInput.value
             }
@@ -107,7 +111,21 @@
 
       setUpAutocomplete() {
         const inputEl = this.shadowRoot.querySelector('input');
-        let awesomplete = new Awesomplete(inputEl);
+        let awesomplete = new Awesomplete(inputEl, {
+          filter: function(text, input) {
+            return Awesomplete.FILTER_CONTAINS(text, input.match(/[^,]*$/)[0]);
+          },
+
+          item: function(text, input) {
+            return Awesomplete.ITEM(text, input.match(/[^,]*$/)[0]);
+          },
+
+          replace: function(text) {
+            var before = this.input.value.match(/^.+,\s*|/)[0];
+            this.input.value = before + text + ", ";
+          }
+        });
+
         let timeout = null;
         let prevValue;
         

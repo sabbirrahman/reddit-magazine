@@ -6,6 +6,12 @@
       display: grid;
     }
 
+    div {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #fc461f;
+      font-size: 18px;
+    }
+
     @media screen and (max-width: 1024px) {
       .posts { grid-template-columns: repeat(4, 1fr); }
     }
@@ -62,6 +68,11 @@
         try {
           const postsEl = this.shadowRoot.querySelector('.posts');
           postsEl.innerHTML = '';
+
+          if (!JSON.parse(posts).length) {
+            postsEl.innerHTML = 'No Result Found!';
+            return;
+          }
           
           JSON.parse(posts).forEach((post) => {
             const postEl = document.createElement('post-card');
