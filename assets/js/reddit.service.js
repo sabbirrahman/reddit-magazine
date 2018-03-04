@@ -1,12 +1,14 @@
 export class RedditService {
-  search(sr, q, loadMore = false) {
+  search(sr, q, t = 'all', loadMore = false) {
     this.sr = sr;
+    this.t = t;
+    this.q = q;
     
     this.url = `https://www.reddit.com/r/${sr.toLowerCase()}/`;
     if (q) {
-      this.url += `search.json?sort=top&restrict_sr=on&type=image&q=${q.toLowerCase()}&t=week`;
+      this.url += `search.json?sort=top&restrict_sr=on&type=image&q=${q.toLowerCase()}&t=${t}`;
     } else {
-      this.url += `new.json?show=all`
+      this.url += `top.json?show=all&t=${t}`
     }
 
     if (loadMore) { this.url += `&after=${this.next}`; }
@@ -33,7 +35,7 @@ export class RedditService {
 
   loadMore() {
     if (this.next && this.sr) {
-      return this.search(this.sr, null, true);
+      return this.search(this.sr, this.q, this.t, true);
     }
   }
 }

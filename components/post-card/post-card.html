@@ -1,34 +1,39 @@
 <template>
   <style>
-    :host {
+    a {
       transition: 0.3s all cubic-bezier(0.175, 0.885, 0.32, 1.275);
       box-shadow: 0 2px 3px 0 rgba(52, 51, 74, 0.06);
-      background: #FFFFFF;
-      border-radius: 6px;
-    }
-    :host(:hover) {
-      box-shadow: 0 16px 24px 0 rgba(114, 135, 171, 0.2);
-      transform: translateY(-8px);
-    }
-    a {
       font-family: Arial, Helvetica, sans-serif;
       text-decoration: none;
-      min-height: 260px;
+      background: #FFFFFF;
+      padding-bottom: 12px;
+      border-radius: 6px;
       color: #342431;
       font-size: 14px;
-      height: inherit;
-      
+      display: block;
+    }
+    a:hover, a:focus {
+      box-shadow: 0 16px 24px 0 rgba(114, 135, 171, 0.2);
+      transform: translateY(-8px);
+      outline: none;
     }
     img {
       border-radius: 6px 6px 0px 0px;
       margin-bottom: -4px;
+      margin-bottom: 12px;
       object-fit: cover;
       height: 140px;
       width: 100%;
     }
     span {
-      display: block;
-      padding: 12px;
+      -webkit-box-orient: vertical;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 3;
+      display: -webkit-box;
+      padding: 0px 12px;
+      line-height: 18px;
+      overflow: hidden;
+      height: 53px;
     }
   </style>
 

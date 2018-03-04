@@ -9,9 +9,9 @@ function showPosts() {
   document.querySelector('post-grid').posts = JSON.stringify(redditPosts);
 }
 
-function getPosts(sr = 'streetwear', q) {
+function getPosts(sr = 'streetwear', q, t) {
   redditService
-    .search(sr, q)
+    .search(sr, q, t)
     .then((posts) => {
       redditPosts = posts;
       showPosts();
@@ -23,7 +23,7 @@ postGrid.addEventListener('autoload', () => {
 });
 
 searchForm.addEventListener('search', (ev) => {
-  getPosts(ev.detail.subreddit, ev.detail.searchTerm);
+  getPosts(ev.detail.subreddit, ev.detail.searchTerm, ev.detail.timeRange);
 });
 
 window.addEventListener('scroll', (ev) => {
